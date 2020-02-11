@@ -1,0 +1,28 @@
+{
+  "name": "sanitized",
+  "version": "1.0.0",
+  "description": "Recursive function that'll sanitize a string or ALL values in an object or array.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nameer-rizvi/sanitized.git"
+  },
+  "keywords": [
+    "sanitizer",
+    "purifier"
+  ],
+  "author": "Nameer Rizvi (https://github.com/nameer-rizvi)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nameer-rizvi/sanitized/issues"
+  },
+  "homepage": "https://github.com/nameer-rizvi/sanitized#readme",
+  "dependencies": {
+    "dompurify": "^2.0.8",
+    "he": "^1.2.0",
+    "jsdom": "^16.1.0"
+  }
+}
