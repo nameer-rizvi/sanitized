@@ -15,7 +15,7 @@ $ npm i sanitized
 ## Usage
 
 ```javascript
-const sanitized = require("scrapefrom");
+const sanitized = require("sanitized");
 // or,
 // import sanitized from "sanitized"
 
@@ -32,14 +32,15 @@ const test = [
 sanitized(test);
 
 // Result:
+//
 // [
 //   "<svg><g></g></svg>",
-//   { name1: ["<math><mi></mi></math>", { name2: "<p>abc</p>" }] }
+//   { name1: [ "<math><mi></mi></math>", { name2: "<p>abc</p>" } ] }
 // ];
 ```
 
 ## Dependencies
 
-- [dompurify][https://www.npmjs.com/package/dompurify]
-- [he][https://www.npmjs.com/package/he]
-- [jsdom][https://www.npmjs.com/package/jsdom]
+- [dompurify](https://www.npmjs.com/package/dompurify)
+- [he](https://www.npmjs.com/package/he)
+- [jsdom](https://www.npmjs.com/package/jsdom)
