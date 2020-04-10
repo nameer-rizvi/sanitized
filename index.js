@@ -1,53 +1,28 @@
-const he = require("he");
-const DOMPurify = require("dompurify");
+const sanitizer = require("./sanitizer");
 
-module.exports = value => {
-  function sanitizeStr(str) {
-    return str ? sanitized(str).trim() : "";
-  }
-
-  function sanitizeArr(arr) {
-    var clone = [].concat(arr);
-
-    clone.forEach((item, index) => {
-      clone[index] = module.exports(item);
-    });
-
-    return clone;
-  }
-
-  function sanitizeObj(obj) {
-    var clone = JSON.parse(JSON.stringify(obj));
-
-    for (const prop in clone) {
-      clone[prop] = module.exports(clone[prop]);
-    }
-
-    return clone;
-  }
-
+module.exports = (value) => {
+  const handlers = {
+    string: (str) => (str ? sanitizer(str).trim() : ""),
+    array: (arr) => {
+      var clone = [].concat(arr);
+      clone.forEach((item, index) => (clone[index] = module.exports(item)));
+      return clone;
+    },
+    object: (obj) => {
+      var clone = JSON.parse(JSON.stringify(obj));
+      Object.keys(clone).forEach(
+        (key) => (clone[key] = module.exports(clone[key]))
+      );
+      return clone;
+    },
+  };
   return value
     ? value.constructor === String
-      ? sanitizeStr(value)
+      ? handlers.string(value)
       : value.constructor === Array
-      ? sanitizeArr(value)
+      ? handlers.array(value)
       : value.constructor === Object
-      ? sanitizeObj(value)
+      ? handlers.object(value)
       : value
     : value;
 };
-
-function sanitized(value) {
-  return DOMPurify.sanitize
-    ? he.decode(DOMPurify.sanitize(value))
-    : jsdom({ createDOMPurify: DOMPurify, value });
-}
-
-function jsdom({ createDOMPurify, value }) {
-  const { JSDOM } = require("jsdom");
-
-  const window = new JSDOM("").window;
-  const DOMPurify = createDOMPurify(window);
-
-  return he.decode(DOMPurify.sanitize(value));
-}
