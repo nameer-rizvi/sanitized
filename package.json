@@ -1,6 +1,6 @@
 {
   "name": "sanitized",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Recursive function that'll sanitize a string or ALL values in an object or array.",
   "main": "index.js",
   "scripts": {
