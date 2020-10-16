@@ -1,28 +1,32 @@
 const sanitizer = require("./sanitizer");
 
 module.exports = (value) => {
-  const handlers = {
+  const handle = {
     string: (str) => (str ? sanitizer(str).trim() : ""),
     array: (arr) => {
       var clone = [].concat(arr);
-      clone.forEach((item, index) => (clone[index] = module.exports(item)));
+      for (var i = clone.length - 1; i >= 0; i--) {
+        clone[i] = module.exports(clone[i]);
+      }
       return clone;
     },
     object: (obj) => {
       var clone = JSON.parse(JSON.stringify(obj));
-      Object.keys(clone).forEach(
-        (key) => (clone[key] = module.exports(clone[key]))
-      );
+      const cloneKeys = Object.keys(clone);
+      for (var i = cloneKeys.length - 1; i >= 0; i--) {
+        const cloneKey = cloneKeys[i];
+        clone[cloneKey] = module.exports(clone[cloneKey]);
+      }
       return clone;
     },
   };
   return value
     ? value.constructor === String
-      ? handlers.string(value)
+      ? handle.string(value)
       : value.constructor === Array
-      ? handlers.array(value)
+      ? handle.array(value)
       : value.constructor === Object
-      ? handlers.object(value)
+      ? handle.object(value)
       : value
     : value;
 };
