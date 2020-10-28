@@ -1,19 +1,16 @@
 const { decode } = require("he");
 const DOMPurify = require("dompurify");
-const { JSDOM } = require("jsdom");
 
 module.exports = (value) => {
   const sanitizer = (str) =>
     str
-      ? decode(
-          DOMPurify.sanitize
-            ? DOMPurify.sanitize(str)
-            : (() => {
-                const { window } = new JSDOM("");
-                const DOMPurifyWindow = DOMPurify(window);
-                return DOMPurifyWindow.sanitize(str);
-              })()
-        )
+      ? DOMPurify.sanitize
+        ? decode(DOMPurify.sanitize(str))
+        : (() => {
+            const { window } = new require("jsdom").JSDOM("");
+            const DOMPurifyWindow = DOMPurify(window);
+            return decode(DOMPurifyWindow.sanitize(str));
+          })()
       : "";
 
   const handlers = [
