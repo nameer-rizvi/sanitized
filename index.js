@@ -7,7 +7,8 @@ module.exports = (value) => {
       ? DOMPurify.sanitize
         ? decode(DOMPurify.sanitize(str))
         : (() => {
-            const { window } = new require("jsdom").JSDOM("");
+            const { JSDOM } = require("jsdom");
+            const { window } = new JSDOM("");
             const DOMPurifyWindow = DOMPurify(window);
             return decode(DOMPurifyWindow.sanitize(str));
           })()

@@ -1,6 +1,6 @@
 {
   "name": "sanitized",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Recursive function that'll sanitize a string or ALL values in an object or array.",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,8 @@
   },
   "keywords": [
     "sanitizer",
-    "purifier"
+    "purifier",
+    "XSS"
   ],
   "author": "Nameer Rizvi (https://github.com/nameer-rizvi)",
   "license": "ISC",
