@@ -1,32 +1,57 @@
-const sanitizer = require("./sanitizer");
+const { decode } = require("he");
+const DOMPurify = require("dompurify");
+const { JSDOM } = require("jsdom");
 
 module.exports = (value) => {
-  const handle = {
-    string: (str) => (str ? sanitizer(str).trim() : ""),
-    array: (arr) => {
-      var clone = [].concat(arr);
-      for (var i = clone.length - 1; i >= 0; i--) {
-        clone[i] = module.exports(clone[i]);
-      }
-      return clone;
+  const sanitizer = (str) =>
+    str
+      ? decode(
+          DOMPurify.sanitize
+            ? DOMPurify.sanitize(str)
+            : (() => {
+                const { window } = new JSDOM("");
+                const DOMPurifyWindow = DOMPurify(window);
+                return DOMPurifyWindow.sanitize(str);
+              })()
+        )
+      : "";
+
+  const handlers = [
+    {
+      constructor: String,
+      handler: sanitizer,
     },
-    object: (obj) => {
-      var clone = JSON.parse(JSON.stringify(obj));
-      const cloneKeys = Object.keys(clone);
-      for (var i = cloneKeys.length - 1; i >= 0; i--) {
-        const cloneKey = cloneKeys[i];
-        clone[cloneKey] = module.exports(clone[cloneKey]);
-      }
-      return clone;
+    {
+      constructor: Array,
+      handler: (arr) => {
+        var clone = [].concat(arr);
+        for (var i = clone.length - 1; i >= 0; i--) {
+          clone[i] = module.exports(clone[i]);
+        }
+        return clone;
+      },
     },
-  };
-  return value
-    ? value.constructor === String
-      ? handle.string(value)
-      : value.constructor === Array
-      ? handle.array(value)
-      : value.constructor === Object
-      ? handle.object(value)
-      : value
-    : value;
+    {
+      constructor: Object,
+      handler: (obj) => {
+        var clone = JSON.parse(JSON.stringify(obj));
+        const cloneKeys = Object.keys(clone);
+        for (var i = cloneKeys.length - 1; i >= 0; i--) {
+          const cloneKey = cloneKeys[i];
+          clone[cloneKey] = module.exports(clone[cloneKey]);
+        }
+        return clone;
+      },
+    },
+  ];
+
+  let handler;
+
+  for (var i = handlers.length - 1; i >= 0; i--) {
+    if (value && value.constructor === handlers[i]["constructor"]) {
+      handler = handlers[i].handler;
+    }
+  }
+
+  return handler ? handler(value) : value;
 };
