@@ -12,10 +12,8 @@ if (DOMPurify.sanitize) {
     const { JSDOM } = require("jsdom");
     const { window } = new JSDOM("<!DOCTYPE html>");
     DOMPurifyWindow = DOMPurify(window);
-    sanitizer = (dirty, options) => {
-      console.log({ options });
-      return decode(DOMPurifyWindow.sanitize(dirty, options));
-    };
+    sanitizer = (dirty, options) =>
+      decode(DOMPurifyWindow.sanitize(dirty, options));
   } catch (error) {
     logError(error);
   }
