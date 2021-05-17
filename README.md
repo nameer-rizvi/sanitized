@@ -1,8 +1,8 @@
 # sanitized
 
-sanitized is a recursive function that'll sanitize a string or ALL values in an object or array. It's great for sanitizing form data before it gets submitted to the back-end (re: protection against XSS attacks).
+sanitized() is a recursive function that'll sanitize a string or ALL strings in an object or array. It's great for sanitizing form data before it gets submitted to the back-end (re: protection against XSS attacks).
 
-It only accepts one param, no matter the constructor, and will return a sanitized version of that one param.
+It accepts two params the first being the value to sanitize, and the second being options to pass to [DOMPurify](https://www.npmjs.com/package/dompurify).
 
 ## Installation
 

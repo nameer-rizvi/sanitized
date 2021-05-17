@@ -1,55 +1,51 @@
-const { decode } = require("he");
 const DOMPurify = require("dompurify");
+const { decode } = require("he");
 
-module.exports = (value) => {
-  const sanitizer = (str) =>
-    str
-      ? DOMPurify.sanitize
-        ? decode(DOMPurify.sanitize(str))
-        : (() => {
-            const { JSDOM } = require("jsdom");
-            const { window } = new JSDOM("");
-            const DOMPurifyWindow = DOMPurify(window);
-            return decode(DOMPurifyWindow.sanitize(str));
-          })()
-      : "";
+let sanitizer = (dirty) => dirty; // default || noop
 
-  const handlers = [
-    {
-      constructor: String,
-      handler: sanitizer,
-    },
-    {
-      constructor: Array,
-      handler: (arr) => {
-        var clone = [].concat(arr);
-        for (var i = clone.length - 1; i >= 0; i--) {
-          clone[i] = module.exports(clone[i]);
-        }
-        return clone;
-      },
-    },
-    {
-      constructor: Object,
-      handler: (obj) => {
-        var clone = JSON.parse(JSON.stringify(obj));
-        const cloneKeys = Object.keys(clone);
-        for (var i = cloneKeys.length - 1; i >= 0; i--) {
-          const cloneKey = cloneKeys[i];
-          clone[cloneKey] = module.exports(clone[cloneKey]);
-        }
-        return clone;
-      },
-    },
-  ];
+const logError = (error) => console.error("[sanitized] " + error.toString());
 
-  let handler;
-
-  for (var i = handlers.length - 1; i >= 0; i--) {
-    if (value && value.constructor === handlers[i]["constructor"]) {
-      handler = handlers[i].handler;
-    }
+if (DOMPurify.sanitize) {
+  sanitizer = (dirty, options) => decode(DOMPurify.sanitize(dirty, options));
+} else {
+  try {
+    const { JSDOM } = require("jsdom");
+    const { window } = new JSDOM("<!DOCTYPE html>");
+    DOMPurifyWindow = DOMPurify(window);
+    sanitizer = (dirty, options) => {
+      console.log({ options });
+      return decode(DOMPurifyWindow.sanitize(dirty, options));
+    };
+  } catch (error) {
+    logError(error);
   }
+}
 
-  return handler ? handler(value) : value;
-};
+function handleDirtyValue(dirty, DOMPurifyOptions) {
+  if (dirty) {
+    if (dirty.constructor === String) {
+      return sanitizer(dirty, DOMPurifyOptions);
+    } else if (dirty.constructor === Array) {
+      let clone = [].concat(dirty);
+      for (let i = 0; i < clone.length; i++) {
+        clone[i] = handleDirtyValue(clone[i], DOMPurifyOptions);
+      }
+      return clone;
+    } else if (dirty.constructor === Object) {
+      try {
+        let clone = JSON.parse(JSON.stringify(dirty));
+        let cloneKeys = Object.keys(clone);
+        for (let j = 0; j < cloneKeys.length; j++) {
+          const cloneKey = cloneKeys[j];
+          clone[cloneKey] = handleDirtyValue(clone[cloneKey], DOMPurifyOptions);
+        }
+        return clone;
+      } catch (error) {
+        logError(error);
+        return dirty;
+      }
+    }
+  } else return dirty; // return original value (null || undefined || 0)
+}
+
+module.exports = handleDirtyValue;
