@@ -1,7 +1,7 @@
 const DOMPurify = require("dompurify");
 const { decode } = require("he");
 
-let sanitizer = (dirty) => dirty; // default || noop
+let sanitizer = (dirty) => dirty;
 
 const logError = (error) => console.error("[sanitized] " + error.toString());
 
@@ -42,8 +42,8 @@ function handleDirtyValue(dirty, DOMPurifyOptions) {
         logError(error);
         return dirty;
       }
-    }
-  } else return dirty; // return original value (null || undefined || 0)
+    } else return dirty;
+  } else return dirty;
 }
 
 module.exports = handleDirtyValue;
