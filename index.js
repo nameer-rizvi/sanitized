@@ -3,8 +3,6 @@ const { decode } = require("he");
 
 let sanitizer = (dirty) => dirty;
 
-const logError = (error) => console.error("[sanitized] " + error.toString());
-
 if (DOMPurify.sanitize) {
   sanitizer = (dirty, options) => decode(DOMPurify.sanitize(dirty, options));
 } else {
@@ -15,35 +13,38 @@ if (DOMPurify.sanitize) {
     sanitizer = (dirty, options) =>
       decode(DOMPurifyWindow.sanitize(dirty, options));
   } catch (error) {
-    logError(error);
+    console.error("[sanitized] " + error.toString());
   }
 }
 
-function handleDirtyValue(dirty, DOMPurifyOptions) {
-  if (dirty) {
-    if (dirty.constructor === String) {
+function handleDirtyValue(dirty, DOMPurifyOptions, callback) {
+  try {
+    if (dirty && dirty.constructor === String)
       return sanitizer(dirty, DOMPurifyOptions);
-    } else if (dirty.constructor === Array) {
+
+    if (dirty && dirty.constructor === Array) {
       let clone = [].concat(dirty);
       for (let i = 0; i < clone.length; i++) {
         clone[i] = handleDirtyValue(clone[i], DOMPurifyOptions);
       }
       return clone;
-    } else if (dirty.constructor === Object) {
-      try {
-        let clone = JSON.parse(JSON.stringify(dirty));
-        let cloneKeys = Object.keys(clone);
-        for (let j = 0; j < cloneKeys.length; j++) {
-          const cloneKey = cloneKeys[j];
-          clone[cloneKey] = handleDirtyValue(clone[cloneKey], DOMPurifyOptions);
-        }
-        return clone;
-      } catch (error) {
-        logError(error);
-        return dirty;
+    }
+
+    if (dirty && dirty.constructor === Object) {
+      let clone = JSON.parse(JSON.stringify(dirty));
+      let cloneKeys = Object.keys(clone);
+      for (let j = 0; j < cloneKeys.length; j++) {
+        const cloneKey = cloneKeys[j];
+        clone[cloneKey] = handleDirtyValue(clone[cloneKey], DOMPurifyOptions);
       }
-    } else return dirty;
-  } else return dirty;
+      return clone;
+    }
+
+    return dirty;
+  } catch (err) {
+    if (callback) callback(err);
+    return dirty;
+  }
 }
 
 module.exports = handleDirtyValue;
