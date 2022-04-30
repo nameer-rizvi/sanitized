@@ -1,6 +1,6 @@
 # sanitized
 
-sanitized() is a recursive function that'll sanitize a string or ALL strings in an object or array. It's great for sanitizing form data before it gets submitted to the back-end (re: protection against XSS attacks).
+sanitized() is a recursive function that'll sanitize a string or ALL strings in a json input. It's great for sanitizing form data before it gets submitted to the back-end (re: protection against XSS attacks).
 
 It accepts two params the first being the value to sanitize, and the second being options to pass to [DOMPurify](https://www.npmjs.com/package/dompurify).
 
@@ -18,13 +18,13 @@ const sanitized = require("sanitized");
 // import sanitized from "sanitized"
 
 const test = [
-	"<svg><g/onload=alert(2)//<p>",
-	{
-		name1: [
-			'<math><mi//xlink:href="data:x,<script>alert(4)</script>">',
-			{ name2: "<p>abc<iframe//src=jAva&Tab;script:alert(3)>def" },
-		],
-	},
+  "<svg><g/onload=alert(2)//<p>",
+  {
+    name1: [
+      '<math><mi//xlink:href="data:x,<script>alert(4)</script>">',
+      { name2: "<p>abc<iframe//src=jAva&Tab;script:alert(3)>def" },
+    ],
+  },
 ];
 
 sanitized(test);

@@ -1,53 +1,42 @@
 const DOMPurify = require("dompurify");
-const { decode } = require("he");
+const he = require("he");
 
 let sanitizer = (dirty) => dirty;
 
 if (DOMPurify.sanitize) {
-  sanitizer = (dirty, options) => decode(DOMPurify.sanitize(dirty, options));
+  sanitizer = (dirty, options) => he.decode(DOMPurify.sanitize(dirty, options));
 } else {
   try {
-    const { JSDOM } = require("jsdom");
-    const { window } = new JSDOM("<!DOCTYPE html>");
-    DOMPurifyWindow = DOMPurify(window);
+    const jsdom = require("jsdom");
+    const JSDOM = new jsdom.JSDOM("<!DOCTYPE html>");
+    const DOMPurifyWindow = DOMPurify(JSDOM.window);
     sanitizer = (dirty, options) =>
-      decode(DOMPurifyWindow.sanitize(dirty, options));
+      he.decode(DOMPurifyWindow.sanitize(dirty, options));
   } catch (error) {
     console.error(error);
   }
 }
 
-function sanitize(dirty, DOMPurifyOptions, callback) {
+function sanitized(dirty, DOMPurifyOptions, errorHandler) {
   try {
-    if (typeof dirty === "string")
-      return sanitizer(dirty, DOMPurifyOptions, callback);
+    let clone = JSON.parse(JSON.stringify(dirty));
 
-    if (dirty && dirty.constructor === Array) {
-      let clone = [].concat(dirty);
-      for (let i = 0; i < clone.length; i++) {
-        clone[i] = sanitize(clone[i], DOMPurifyOptions, callback);
-      }
-      return clone;
-    }
+    if (typeof clone === "string") clone = sanitizer(clone, DOMPurifyOptions);
 
-    if (dirty && dirty.constructor === Object) {
-      let clone = JSON.parse(JSON.stringify(dirty));
-      let cloneKeys = Object.keys(clone);
-      for (let i = 0; i < cloneKeys.length; i++) {
-        const cloneKey = cloneKeys[i];
-        clone[cloneKey] = sanitize(clone[cloneKey], DOMPurifyOptions, callback);
-      }
-      return clone;
-    }
+    if (clone instanceof Array)
+      for (let i = 0; i < clone.length; i++)
+        clone[i] = sanitized(clone[i], DOMPurifyOptions);
 
-    if (callback) callback(null, dirty);
+    if (clone instanceof Object)
+      for (cloneKey of Object.keys(clone))
+        clone[cloneKey] = sanitized(clone[cloneKey], DOMPurifyOptions);
 
-    return dirty;
+    return clone;
   } catch (err) {
-    if (callback) callback(err);
+    if (errorHandler) errorHandler(err);
 
     return dirty;
   }
 }
 
-module.exports = sanitize;
+module.exports = sanitized;
