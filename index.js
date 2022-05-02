@@ -17,7 +17,7 @@ if (DOMPurify.sanitize) {
   }
 }
 
-function sanitized(dirty, DOMPurifyOptions, errorHandler) {
+function sanitized(dirty, DOMPurifyOptions, errorCallback) {
   try {
     let clone = JSON.parse(JSON.stringify(dirty));
 
@@ -28,12 +28,12 @@ function sanitized(dirty, DOMPurifyOptions, errorHandler) {
         clone[i] = sanitized(clone[i], DOMPurifyOptions);
 
     if (clone instanceof Object)
-      for (cloneKey of Object.keys(clone))
+      for (let cloneKey of Object.keys(clone))
         clone[cloneKey] = sanitized(clone[cloneKey], DOMPurifyOptions);
 
     return clone;
   } catch (err) {
-    if (errorHandler) errorHandler(err);
+    if (errorCallback) errorCallback(err);
 
     return dirty;
   }
