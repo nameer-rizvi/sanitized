@@ -9,7 +9,7 @@ if (!dompurify.sanitize) {
   dompurify = dompurify(jsdomWindow);
 }
 
-function sanitized(dirty = "", dompurifyOption) {
+function sanitized(dirty, dompurifyOption) {
   let clone = JSON.parse(JSON.stringify(dirty));
 
   if (clone instanceof Array) {
