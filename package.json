@@ -1,8 +1,9 @@
 {
   "name": "sanitized",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Recursive function that'll sanitize a string or ALL strings in a json input.",
   "main": "index.js",
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nameer-rizvi/sanitized.git"
