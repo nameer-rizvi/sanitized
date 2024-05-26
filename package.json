@@ -1,6 +1,6 @@
 {
   "name": "sanitized",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Recursive function that'll sanitize a string or ALL strings in a json input.",
   "main": "index.js",
   "scripts": {},
@@ -15,7 +15,9 @@
   ],
   "author": "Nameer Rizvi (https://github.com/nameer-rizvi)",
   "license": "ISC",
-  "bugs": "https://github.com/nameer-rizvi/sanitized/issues",
+  "bugs": {
+    "url": "https://github.com/nameer-rizvi/sanitized/issues"
+  },
   "homepage": "https://github.com/nameer-rizvi/sanitized#readme",
   "dependencies": {
     "dompurify": "^3.1.4",

@@ -10,6 +10,12 @@ It accepts two params the first being the value to sanitize, and the second bein
 $ npm i sanitized
 ```
 
+### Node v16 Support
+
+```
+$ npm i sanitized@1.2.1
+```
+
 ## Usage
 
 ```javascript
