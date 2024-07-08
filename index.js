@@ -10,21 +10,27 @@ if (!dompurify.sanitize) {
 }
 
 function sanitized(dirty, dompurifyOption) {
-  let clone = JSON.parse(JSON.stringify(dirty));
-
-  if (clone instanceof Array) {
-    for (let i = 0; i < clone.length; i++) {
-      clone[i] = sanitized(clone[i], dompurifyOption);
+  if (Array.isArray(dirty)) {
+    for (let i = 0; i < dirty.length; i++) {
+      dirty[i] = sanitized(dirty[i], dompurifyOption);
     }
-  } else if (clone instanceof Object) {
-    for (let key of Object.keys(clone)) {
-      clone[key] = sanitized(clone[key], dompurifyOption);
-    }
-  } else if (typeof clone === "string") {
-    clone = he.decode(dompurify.sanitize(dirty, dompurifyOption));
+    return dirty;
   }
 
-  return clone;
+  if (typeof dirty === "object") {
+    for (const key in dirty) {
+      if (dirty.hasOwnProperty(key)) {
+        dirty[key] = sanitized(dirty[key], dompurifyOption);
+      }
+    }
+    return dirty;
+  }
+
+  if (typeof dirty === "string") {
+    return he.decode(dompurify.sanitize(dirty, dompurifyOption));
+  }
+
+  return dirty;
 }
 
 module.exports = sanitized;
