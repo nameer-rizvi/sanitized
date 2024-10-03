@@ -1,9 +1,14 @@
 {
   "name": "sanitized",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Recursive function that'll sanitize a string or ALL strings in a json input.",
-  "main": "index.js",
-  "scripts": {},
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test-cjs": "yarn build && node test/test-cjs.js",
+    "test-esm": "yarn build && node test/test-esm.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nameer-rizvi/sanitized.git"
@@ -20,8 +25,14 @@
   },
   "homepage": "https://github.com/nameer-rizvi/sanitized#readme",
   "dependencies": {
-    "dompurify": "^3.1.4",
+    "@types/he": "^1.2.3",
     "he": "^1.2.0",
-    "jsdom": "^24.0.0"
+    "isomorphic-dompurify": "^2.16.0",
+    "jsdom": "^25.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
   }
 }

@@ -2,7 +2,7 @@
 
 sanitized() is a recursive function that'll sanitize a string or ALL strings in a json input. It's great for sanitizing form data before it gets submitted to the back-end (re: protection against XSS attacks).
 
-It accepts two params the first being the value to sanitize, and the second being options to pass to [DOMPurify](https://www.npmjs.com/package/dompurify).
+It accepts two params the first being the value to sanitize, and the second being options to pass to [DOMPurify](https://github.com/kkomelin/isomorphic-dompurify).
 
 ## Installation
 

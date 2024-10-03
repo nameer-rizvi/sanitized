@@ -1,0 +1,9 @@
+[
+  "<svg><g/onload=alert(2)//<p>",
+  {
+    "name1": [
+      "<math><mi//xlink:href=\"data:x,<script>alert(4)</script>\">",
+      { "name2": "<p>abc<iframe//src=jAva&Tab;script:alert(3)>def" }
+    ]
+  }
+]
