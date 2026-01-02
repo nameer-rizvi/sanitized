@@ -1,28 +1,25 @@
-import DOMPurify from "isomorphic-dompurify";
 import he from "he";
+import DOMPurify from "isomorphic-dompurify";
 
-function sanitized(dirty: any, DOMPurifyOptions: { [key: string]: any }) {
-  if (Array.isArray(dirty)) {
-    for (let i = 0; i < dirty.length; i++) {
-      dirty[i] = sanitized(dirty[i], DOMPurifyOptions);
-    }
-    return dirty;
+function sanitized(input: any, options: DOMPurify.Config = {}): any {
+  if (Array.isArray(input)) {
+    const results = [];
+    for (const item of input) results.push(sanitized(item, options));
+    return results;
   }
 
-  if (typeof dirty === "object") {
-    for (const key in dirty) {
-      if (dirty.hasOwnProperty(key)) {
-        dirty[key] = sanitized(dirty[key], DOMPurifyOptions);
-      }
-    }
-    return dirty;
+  if (input !== null && typeof input === "object") {
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(input))
+      result[key] = sanitized(value, options);
+    return result;
   }
 
-  if (typeof dirty === "string") {
-    return he.decode(DOMPurify.sanitize(dirty, DOMPurifyOptions));
+  if (typeof input === "string") {
+    return he.decode(DOMPurify.sanitize(input, options));
   }
 
-  return dirty;
+  return input;
 }
 
 export = sanitized;

@@ -1,4 +1,3 @@
-declare function sanitized(dirty: any, DOMPurifyOptions: {
-    [key: string]: any;
-}): any;
+import DOMPurify from "isomorphic-dompurify";
+declare function sanitized(input: any, options?: DOMPurify.Config): any;
 export = sanitized;
