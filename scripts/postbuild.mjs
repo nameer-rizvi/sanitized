@@ -15,5 +15,5 @@ writeFileSync(
 // Append CJS interop so require("sanitized") returns the function directly
 appendFileSync(
   "dist/cjs/index.js",
-  `\nmodule.exports = exports.default;\nmodule.exports.default = exports.default;\nmodule.exports.sanitized = exports.default;\n`,
+  `\nmodule.exports = exports.default;\nmodule.exports.default = exports.default;\n`,
 );
