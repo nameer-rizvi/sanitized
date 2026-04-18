@@ -1,4 +1,4 @@
-const sanitized = require("../dist/cjs/index.js").default;
+const sanitized = require("../dist/cjs/index.js");
 
 console.log([
   sanitized("<img src=x onerror=alert(1)//>"),
