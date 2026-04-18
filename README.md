@@ -12,7 +12,7 @@ yarn add sanitized
 
 ### Node v16 Support
 
-```console
+```bash
 npm install sanitized@1.2.1
 # or
 yarn add sanitized@1.2.1
